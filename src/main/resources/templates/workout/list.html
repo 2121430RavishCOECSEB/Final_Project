@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Workouts - Fitness Tracker</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-dumbbell me-2"></i>Fitness Tracker
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/workouts">
+                            <i class="fas fa-running me-1"></i>Workouts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">
+                            <i class="fas fa-info-circle me-1"></i>About
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+                           data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>
+                            <span th:text="${user.firstName} ? ${user.firstName} : ${user.username}">User</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="d-inline">
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mt-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="display-5">
+                            <i class="fas fa-running text-primary me-2"></i>My Workouts
+                        </h1>
+                        <p class="lead text-muted">Track and manage your fitness activities</p>
+                    </div>
+                    <a href="/workouts/new" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Add New Workout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search workouts...">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <select class="form-select" id="filterType">
+                    <option value="">All Types</option>
+                    <option value="CARDIO">Cardio</option>
+                    <option value="STRENGTH">Strength</option>
+                    <option value="FLEXIBILITY">Flexibility</option>
+                    <option value="SPORTS">Sports</option>
+                    <option value="OTHER">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Workouts List -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>Workout History
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${workouts.empty}" class="text-center py-5">
+                            <i class="fas fa-running fa-4x text-muted mb-3"></i>
+                            <h4 class="text-muted">No workouts found</h4>
+                            <p class="text-muted">Start your fitness journey by adding your first workout!</p>
+                            <a href="/workouts/new" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i>Add Your First Workout
+                            </a>
+                        </div>
+                        
+                        <div th:if="${!workouts.empty}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Workout</th>
+                                        <th>Type</th>
+                                        <th>Duration</th>
+                                        <th>Calories</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="workout : ${workouts}">
+                                        <td>
+                                            <strong th:text="${workout.workoutName}">Workout Name</strong>
+                                            <div th:if="${workout.notes}" class="small text-muted mt-1" 
+                                                 th:text="${workout.notes}">Notes</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge" 
+                                                  th:classappend="${workout.workoutType.name() == 'CARDIO' ? 'bg-danger' : 
+                                                                  workout.workoutType.name() == 'STRENGTH' ? 'bg-primary' :
+                                                                  workout.workoutType.name() == 'FLEXIBILITY' ? 'bg-success' :
+                                                                  workout.workoutType.name() == 'SPORTS' ? 'bg-warning' : 'bg-secondary'}"
+                                                  th:text="${workout.workoutType}">Type</span>
+                                        </td>
+                                        <td th:text="${workout.durationMinutes} + ' min'">Duration</td>
+                                        <td th:text="${workout.caloriesBurned} + ' cal'">Calories</td>
+                                        <td th:text="${#temporals.format(workout.workoutDate, 'MMM dd, yyyy')}">Date</td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a th:href="@{/workouts/{id}(id=${workout.id})}" 
+                                                   class="btn btn-sm btn-outline-primary" 
+                                                   data-bs-toggle="tooltip" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a th:href="@{/workouts/{id}/edit(id=${workout.id})}" 
+                                                   class="btn btn-sm btn-outline-secondary"
+                                                   data-bs-toggle="tooltip" title="Edit Workout">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form th:action="@{/workouts/{id}/delete(id=${workout.id})}" 
+                                                      method="post" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                            data-bs-toggle="tooltip" title="Delete Workout"
+                                                            onclick="return confirm('Are you sure you want to delete this workout?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Summary -->
+        <div th:if="${!workouts.empty}" class="row mt-4">
+            <div class="col-md-3 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h4 th:text="${workouts.size()}">0</h4>
+                        <p class="mb-0">Total Workouts</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h4 th:text="${totalCalories}">0</h4>
+                        <p class="mb-0">Total Calories</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h4 th:text="${totalDuration + ' min'}">0 min</h4>
+                        <p class="mb-0">Total Duration</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h4 th:text="${#temporals.format(workouts[0].workoutDate, 'MMM dd')}">Date</h4>
+                        <p class="mb-0">Last Workout</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light text-center text-muted py-4 mt-5">
+        <div class="container">
+            <p>&copy; 2024 Fitness Tracker. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/script.js}"></script>
+</body>
+</html>

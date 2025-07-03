@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Fitness Tracker</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-dumbbell me-2"></i>Fitness Tracker
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/login">
+                    <i class="fas fa-sign-in-alt me-1"></i>Login
+                </a>
+                <a class="nav-link" href="/admin/register">
+                    <i class="fas fa-user-shield me-1"></i>Admin Register
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-user-plus me-2"></i>Create Account
+                        </h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/register}" th:object="${user}" method="post">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="firstName" class="form-label">
+                                        <i class="fas fa-user me-1"></i>First Name
+                                    </label>
+                                    <input type="text" class="form-control" id="firstName" th:field="*{firstName}" 
+                                           placeholder="Enter your first name">
+                                    <div th:if="${#fields.hasErrors('firstName')}" class="text-danger small">
+                                        <span th:errors="*{firstName}"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="lastName" class="form-label">
+                                        <i class="fas fa-user me-1"></i>Last Name
+                                    </label>
+                                    <input type="text" class="form-control" id="lastName" th:field="*{lastName}" 
+                                           placeholder="Enter your last name">
+                                    <div th:if="${#fields.hasErrors('lastName')}" class="text-danger small">
+                                        <span th:errors="*{lastName}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="username" class="form-label">
+                                        <i class="fas fa-at me-1"></i>Username *
+                                    </label>
+                                    <input type="text" class="form-control" id="username" th:field="*{username}" 
+                                           placeholder="Choose a username" required>
+                                    <div th:if="${#fields.hasErrors('username')}" class="text-danger small">
+                                        <span th:errors="*{username}"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">
+                                        <i class="fas fa-envelope me-1"></i>Email *
+                                    </label>
+                                    <input type="email" class="form-control" id="email" th:field="*{email}" 
+                                           placeholder="Enter your email address" required>
+                                    <div th:if="${#fields.hasErrors('email')}" class="text-danger small">
+                                        <span th:errors="*{email}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">
+                                    <i class="fas fa-lock me-1"></i>Password *
+                                </label>
+                                <input type="password" class="form-control" id="password" th:field="*{password}" 
+                                       placeholder="Create a password" required>
+                                <div th:if="${#fields.hasErrors('password')}" class="text-danger small">
+                                    <span th:errors="*{password}"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="age" class="form-label">
+                                        <i class="fas fa-birthday-cake me-1"></i>Age
+                                    </label>
+                                    <input type="number" class="form-control" id="age" th:field="*{age}" 
+                                           placeholder="Enter your age" min="13" max="120">
+                                    <div th:if="${#fields.hasErrors('age')}" class="text-danger small">
+                                        <span th:errors="*{age}"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="weightKg" class="form-label">
+                                        <i class="fas fa-weight me-1"></i>Weight (kg)
+                                    </label>
+                                    <input type="number" class="form-control" id="weightKg" th:field="*{weightKg}" 
+                                           placeholder="Weight in kg" step="0.1" min="20" max="300">
+                                    <div th:if="${#fields.hasErrors('weightKg')}" class="text-danger small">
+                                        <span th:errors="*{weightKg}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="heightCm" class="form-label">
+                                        <i class="fas fa-ruler-vertical me-1"></i>Height (cm)
+                                    </label>
+                                    <input type="number" class="form-control" id="heightCm" th:field="*{heightCm}" 
+                                           placeholder="Height in cm" step="0.1" min="100" max="250">
+                                    <div th:if="${#fields.hasErrors('heightCm')}" class="text-danger small">
+                                        <span th:errors="*{heightCm}"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="gender" class="form-label">
+                                        <i class="fas fa-venus-mars me-1"></i>Gender
+                                    </label>
+                                    <select class="form-select" id="gender" th:field="*{gender}">
+                                        <option value="">Select gender</option>
+                                        <option th:each="genderOption : ${genders}" 
+                                                th:value="${genderOption}" 
+                                                th:text="${genderOption}">Gender</option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('gender')}" class="text-danger small">
+                                        <span th:errors="*{gender}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="goal" class="form-label">
+                                        <i class="fas fa-bullseye me-1"></i>Fitness Goal
+                                    </label>
+                                    <select class="form-select" id="goal" th:field="*{goal}">
+                                        <option value="">Select your goal</option>
+                                        <option th:each="goalOption : ${goals}" 
+                                                th:value="${goalOption}" 
+                                                th:text="${goalOption}">Goal</option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('goal')}" class="text-danger small">
+                                        <span th:errors="*{goal}"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="dateOfBirth" class="form-label">
+                                        <i class="fas fa-calendar me-1"></i>Date of Birth
+                                    </label>
+                                    <input type="date" class="form-control" id="dateOfBirth" th:field="*{dateOfBirth}">
+                                    <div th:if="${#fields.hasErrors('dateOfBirth')}" class="text-danger small">
+                                        <span th:errors="*{dateOfBirth}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-user-plus me-1"></i>Create Account
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="text-center">
+                            <p class="text-muted mb-0">Already have an account?</p>
+                            <a href="/login" class="btn btn-outline-primary mt-2">
+                                <i class="fas fa-sign-in-alt me-1"></i>Sign In
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light text-center text-muted py-4 mt-5">
+        <div class="container">
+            <p>&copy; 2024 Fitness Tracker. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/script.js}"></script>
+</body>
+</html> 

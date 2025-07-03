@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Workout Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <nav th:replace="layout/base :: navbar"></nav>
+    <main class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">
+                            <i class="fas fa-dumbbell me-2"></i>Workout Details
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-4">Workout Name:</dt>
+                            <dd class="col-sm-8" th:text="${workout.workoutName}">Workout Name</dd>
+                            <dt class="col-sm-4">Type:</dt>
+                            <dd class="col-sm-8" th:text="${workout.workoutType}">Type</dd>
+                            <dt class="col-sm-4">Duration (minutes):</dt>
+                            <dd class="col-sm-8" th:text="${workout.durationMinutes}">0</dd>
+                            <dt class="col-sm-4">Calories Burned:</dt>
+                            <dd class="col-sm-8" th:text="${workout.caloriesBurned}">0</dd>
+                            <dt class="col-sm-4">Workout Date:</dt>
+                            <dd class="col-sm-8" th:text="${#temporals.format(workout.workoutDate, 'MMM dd, yyyy HH:mm')}">Date</dd>
+                            <dt class="col-sm-4">Notes:</dt>
+                            <dd class="col-sm-8" th:text="${workout.notes}">No notes</dd>
+                        </dl>
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/workouts" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Back to Workouts
+                            </a>
+                            <a th:href="@{'/workouts/' + ${workout.id} + '/edit'}" class="btn btn-primary">
+                                <i class="fas fa-edit me-1"></i>Edit Workout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="bg-light text-center text-muted py-4 mt-5">
+        <div class="container">
+            <p>&copy; 2024 Fitness Tracker. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/script.js}"></script>
+</body>
+</html> 

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Diet Plan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 th:text="${editMode} ? 'Edit Diet Plan' : 'Create Diet Plan'" class="mb-0"></h2>
+        <a href="/coach-dashboard" class="btn btn-outline-primary btn-lg"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+    </div>
+    <form th:action="${editMode} ? @{'/coach/diet-plans/' + ${plan.id} + '/edit'} : @{/coach/diet-plans}" th:object="${plan}" method="post">
+        <div class="mb-3">
+            <label for="mealName" class="form-label">Meal Name</label>
+            <input type="text" class="form-control" id="mealName" th:field="*{mealName}" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" th:field="*{description}" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="calories" class="form-label">Calories</label>
+            <input type="number" class="form-control" id="calories" th:field="*{calories}" required>
+        </div>
+        <div class="mb-3">
+            <label for="userId" class="form-label">Assign to User</label>
+            <select class="form-select" id="userId" name="userId" required>
+                <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username}" th:selected="${plan.assignedUser != null and user.id == plan.assignedUser.id}"></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success" th:text="${editMode} ? 'Update Plan' : 'Create Plan'"></button>
+        <a href="/coach/diet-plans" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Clients - Fitness Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="/coach-dashboard">
+                <i class="fas fa-user-tie me-2"></i>Coach Panel
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/coach-dashboard">
+                    <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                </a>
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-link nav-link">
+                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-users me-2"></i>My Clients</h2>
+                    <a href="/coach-dashboard" class="btn btn-outline-success">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-list me-2"></i>Client List</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(clients)}" class="text-center py-4">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No clients found</h5>
+                            <p class="text-muted">Clients will appear here once they register.</p>
+                        </div>
+                        
+                        <div th:if="${!#lists.isEmpty(clients)}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th><i class="fas fa-user me-1"></i>Name</th>
+                                        <th><i class="fas fa-envelope me-1"></i>Email</th>
+                                        <th><i class="fas fa-birthday-cake me-1"></i>Age</th>
+                                        <th><i class="fas fa-venus-mars me-1"></i>Gender</th>
+                                        <th><i class="fas fa-bullseye me-1"></i>Goal</th>
+                                        <th><i class="fas fa-weight me-1"></i>Weight (kg)</th>
+                                        <th><i class="fas fa-ruler-vertical me-1"></i>Height (cm)</th>
+                                        <th><i class="fas fa-calendar me-1"></i>Joined</th>
+                                        <th><i class="fas fa-cogs me-1"></i>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="client : ${clients}">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <span th:text="${client.firstName + ' ' + client.lastName}"></span>
+                                            </div>
+                                        </td>
+                                        <td th:text="${client.email}"></td>
+                                        <td th:text="${client.age}"></td>
+                                        <td>
+                                            <span th:if="${client.gender.name() == 'MALE'}" class="badge bg-primary">
+                                                <i class="fas fa-mars me-1"></i>Male
+                                            </span>
+                                            <span th:if="${client.gender.name() == 'FEMALE'}" class="badge bg-pink">
+                                                <i class="fas fa-venus me-1"></i>Female
+                                            </span>
+                                            <span th:if="${client.gender.name() == 'OTHER'}" class="badge bg-secondary">
+                                                <i class="fas fa-genderless me-1"></i>Other
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${client.goal.name() == 'WEIGHT_LOSS'}" class="badge bg-danger">
+                                                <i class="fas fa-arrow-down me-1"></i>Weight Loss
+                                            </span>
+                                            <span th:if="${client.goal.name() == 'MUSCLE_GAIN'}" class="badge bg-success">
+                                                <i class="fas fa-arrow-up me-1"></i>Muscle Gain
+                                            </span>
+                                            <span th:if="${client.goal.name() == 'ENDURANCE'}" class="badge bg-info">
+                                                <i class="fas fa-running me-1"></i>Endurance
+                                            </span>
+                                            <span th:if="${client.goal.name() == 'FLEXIBILITY'}" class="badge bg-warning">
+                                                <i class="fas fa-child me-1"></i>Flexibility
+                                            </span>
+                                            <span th:if="${client.goal.name() == 'GENERAL_FITNESS'}" class="badge bg-primary">
+                                                <i class="fas fa-heart me-1"></i>General Fitness
+                                            </span>
+                                            <span th:if="${client.goal.name() == 'SPORTS_PERFORMANCE'}" class="badge bg-secondary">
+                                                <i class="fas fa-trophy me-1"></i>Sports Performance
+                                            </span>
+                                        </td>
+                                        <td th:text="${client.weightKg}"></td>
+                                        <td th:text="${client.heightCm}"></td>
+                                        <td th:text="${#temporals.format(client.createdAt, 'dd/MM/yyyy')}"></td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a th:href="@{/coach/workout-plans(userId=${client.id})}" class="btn btn-sm btn-outline-primary" title="View Workout Plans">
+                                                    <i class="fas fa-dumbbell"></i>
+                                                </a>
+                                                <a th:href="@{/coach/diet-plans(userId=${client.id})}" class="btn btn-sm btn-outline-success" title="View Diet Plans">
+                                                    <i class="fas fa-utensils"></i>
+                                                </a>
+                                                <a th:href="@{/coach/workout-plans/new}" class="btn btn-sm btn-outline-info" title="Create Workout Plan">
+                                                    <i class="fas fa-plus"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-light text-center text-muted py-4 mt-5">
+        <div class="container">
+            <p>&copy; 2024 Fitness Tracker. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/script.js}"></script>
+</body>
+</html> 

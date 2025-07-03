@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Tracker - Fitness Tracker</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-dumbbell me-2"></i>Fitness Tracker
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/dashboard">
+                            <i class="fas fa-chart-line me-1"></i>Performance
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/workouts">
+                            <i class="fas fa-dumbbell me-1"></i>Workouts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/workouts/new">
+                            <i class="fas fa-plus me-1"></i>Add Workout
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-1"></i>
+                            <span th:text="${#authentication.name}">User</span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+<!--                            <li>-->
+<!--                                <a class="dropdown-item" href="/profile">-->
+<!--                                    <i class="fas fa-user-edit me-1"></i>Profile-->
+<!--                                </a>-->
+<!--                            </li>-->
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="d-inline">
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mt-4">
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-gradient-primary text-white">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h2 class="card-title">
+                                    <i class="fas fa-chart-line me-2"></i>Performance Tracker
+                                </h2>
+                                <p class="card-text">
+                                    Monitor your fitness progress with comprehensive analytics and insights.
+                                </p>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-light text-dark me-2">
+                                        <i class="fas fa-user me-1"></i>User
+                                    </span>
+                                    <span class="text-light">
+                                        <i class="fas fa-clock me-1"></i>
+                                        <span th:text="${#dates.format(#dates.createNow(), 'EEEE, MMMM d, yyyy')}">Today</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <i class="fas fa-chart-line fa-4x text-light opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Overview Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card text-center h-100 border-primary">
+                    <div class="card-body">
+                        <i class="fas fa-dumbbell fa-2x text-primary mb-2"></i>
+                        <h5 class="card-title">Total Workouts</h5>
+                        <p class="card-text display-6" th:text="${workoutCount}">0</p>
+                        <small class="text-muted">This month</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-center h-100 border-success">
+                    <div class="card-body">
+                        <i class="fas fa-fire fa-2x text-success mb-2"></i>
+                        <h5 class="card-title">Calories Burned</h5>
+                        <p class="card-text display-6" th:text="${totalCalories}">0</p>
+                        <small class="text-muted">This month</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-center h-100 border-info">
+                    <div class="card-body">
+                        <i class="fas fa-clock fa-2x text-info mb-2"></i>
+                        <h5 class="card-title">Total Time</h5>
+                        <p class="card-text display-6" th:text="${totalTime}">0</p>
+                        <small class="text-muted">hours</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-center h-100 border-warning">
+                    <div class="card-body">
+                        <i class="fas fa-trophy fa-2x text-warning mb-2"></i>
+                        <h5 class="card-title">Current Streak</h5>
+                        <p class="card-text display-6" th:text="${currentStreak}">0</p>
+                        <small class="text-muted">days</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row mb-4">
+            <!-- Workout Activity Chart -->
+            <div class="col-lg-8 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>Workout Activity (Last 7 Days)
+                        </h5>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-primary active" onclick="updateChart('week')">Week</button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="updateChart('month')">Month</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="workoutChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workout Type Distribution -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-pie-chart me-2"></i>Workout Types
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="workoutTypeChart" width="200" height="200"></canvas>
+                        <div class="alert alert-info">
+                          <strong>Debug:</strong><br>
+                          Labels: [[${workoutTypeLabels}]]<br>
+                          Counts: [[${workoutTypeCounts}]]
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan Progress Section -->
+        <div class="row mb-4">
+            <!-- Workout Plans Progress -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-dumbbell me-2"></i>Workout Plans Progress
+                        </h5>
+                        <a href="/user/workout-plans" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye me-1"></i>View All
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${workoutPlans.empty}" class="text-center py-4">
+                            <i class="fas fa-dumbbell fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No workout plans assigned</h6>
+                            <p class="text-muted small">Your coach will assign workout plans here.</p>
+                        </div>
+                        <div th:if="${!workoutPlans.empty}">
+                            <div th:each="plan : ${workoutPlans}" class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-bold" th:text="${plan.title}">Plan Title</span>
+                                    <span class="badge" th:classappend="${plan.completed ? 'bg-success' : 'bg-warning'}" 
+                                          th:text="${plan.completed ? 'Completed' : 'In Progress'}">Status</span>
+                                </div>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar" role="progressbar" 
+                                         th:style="'width: ' + ${plan.completed ? '100' : '25'} + '%'" 
+                                         th:attr="aria-valuenow=${plan.completed ? '100' : '25'}, aria-valuemin='0', aria-valuemax='100'">
+                                    </div>
+                                </div>
+                                <small class="text-muted" th:text="${plan.description}">Description</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diet Plans Progress -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-utensils me-2"></i>Diet Plans Progress
+                        </h5>
+                        <a href="/user/diet-plans" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-eye me-1"></i>View All
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${dietPlans.empty}" class="text-center py-4">
+                            <i class="fas fa-utensils fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No diet plans assigned</h6>
+                            <p class="text-muted small">Your coach will assign diet plans here.</p>
+                        </div>
+                        <div th:if="${!dietPlans.empty}">
+                            <div th:each="plan : ${dietPlans}" class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-bold" th:text="${plan.mealName}">Meal Name</span>
+                                    <span class="badge" th:classappend="${plan.completed ? 'bg-success' : 'bg-warning'}" 
+                                          th:text="${plan.completed ? 'Completed' : 'In Progress'}">Status</span>
+                                </div>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-success" role="progressbar" 
+                                         th:style="'width: ' + ${plan.completed ? '100' : '25'} + '%'" 
+                                         th:attr="aria-valuenow=${plan.completed ? '100' : '25'}, aria-valuemin='0', aria-valuemax='100'">
+                                    </div>
+                                </div>
+                                <small class="text-muted" th:text="${plan.description}">Description</small>
+                                <small class="text-muted d-block" th:if="${plan.calories}" th:text="'Calories: ' + ${plan.calories}">Calories</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-history me-2"></i>Recent Activity
+                        </h5>
+                        <a href="/workouts" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye me-1"></i>View All
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${recentWorkouts.empty}" class="text-center py-4">
+                            <i class="fas fa-dumbbell fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No recent workouts</h6>
+                            <p class="text-muted small">Start tracking your workouts to see your progress!</p>
+                            <a href="/workouts/new" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i>Add Workout
+                            </a>
+                        </div>
+                        <div th:if="${!recentWorkouts.empty}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Duration</th>
+                                        <th>Calories</th>
+                                        <th>Performance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="workout : ${recentWorkouts}">
+                                        <td th:text="${#temporals.format(workout.workoutDate, 'MMM dd')}">Date</td>
+                                        <td>
+                                            <span class="badge" th:classappend="${workout.workoutType == 'CARDIO' ? 'bg-success' : 
+                                                                              workout.workoutType == 'STRENGTH' ? 'bg-primary' : 
+                                                                              workout.workoutType == 'FLEXIBILITY' ? 'bg-info' : 'bg-secondary'}"
+                                                  th:text="${workout.workoutType}">Type</span>
+                                        </td>
+                                        <td th:text="${workout.durationMinutes + ' min'}">Duration</td>
+                                        <td th:text="${workout.caloriesBurned + ' cal'}">Calories</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-arrow-up text-success me-1" th:if="${workout.caloriesBurned > 300}"></i>
+                                                <i class="fas fa-minus text-warning me-1" th:if="${workout.caloriesBurned <= 300 && workout.caloriesBurned > 150}"></i>
+                                                <i class="fas fa-arrow-down text-danger me-1" th:if="${workout.caloriesBurned <= 150}"></i>
+                                                <small th:text="${workout.caloriesBurned > 300 ? 'Excellent' : workout.caloriesBurned > 150 ? 'Good' : 'Keep Going'}">Performance</small>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light text-center text-muted py-4 mt-5">
+        <div class="container">
+            <p>&copy; 2024 Fitness Tracker. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/script.js}"></script>
+    
+    <!-- Performance Charts -->
+    <script th:inline="javascript">
+        // Assign Thymeleaf arrays to JS variables
+        const workoutLabels = [[${workoutLabels}]];
+        const workoutCounts = [[${workoutCounts}]];
+        const caloriesCounts = [[${caloriesCounts}]];
+        const workoutTypeLabels = [[${workoutTypeLabels}]];
+        const workoutTypeCounts = [[${workoutTypeCounts}]];
+
+        // Workout Activity Chart
+        const workoutCtx = document.getElementById('workoutChart').getContext('2d');
+        const workoutChart = new Chart(workoutCtx, {
+            type: 'line',
+            data: {
+                labels: workoutLabels,
+                datasets: [{
+                    label: 'Workouts',
+                    data: workoutCounts,
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }, {
+                    label: 'Calories',
+                    data: caloriesCounts,
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.1,
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Workouts'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Calories'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                }
+            }
+        });
+
+        // Workout Type Distribution Chart
+        const typeCtx = document.getElementById('workoutTypeChart').getContext('2d');
+        const typeChart = new Chart(typeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: workoutTypeLabels,
+                datasets: [{
+                    data: workoutTypeCounts,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 205, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        function updateChart(period) {
+            // Update chart data based on period
+            console.log('Updating chart for period:', period);
+        }
+    </script>
+</body>
+</html> 
