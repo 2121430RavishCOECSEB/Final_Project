@@ -17,4 +17,5 @@ RUN mvn clean package -DskipTests
 EXPOSE 8082
 
 # Run the JAR file
-CMD ["java", "-jar", "fitness-tracker-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "target/fitness-tracker-0.0.1-SNAPSHOT.jar"]
+
