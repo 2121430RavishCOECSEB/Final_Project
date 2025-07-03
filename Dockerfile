@@ -1,17 +1,20 @@
-# Use official OpenJDK image as base
-FROM eclipse-temurin:17-jdk-alpine
+# Use official OpenJDK with Maven
+FROM eclipse-temurin:17-jdk
 
-# Set working directory inside container
+# Install Maven
+RUN apt-get update && apt-get install -y maven
+
+# Set working directory
 WORKDIR /app
 
-# Copy Maven project files
+# Copy all project files
 COPY . .
 
-# Package the Spring Boot app (this generates the jar)
-RUN ./mvnw clean package -DskipTests
+# Build the application
+RUN mvn clean package -DskipTests
 
-# Expose port (same as your application.properties server.port)
+# Expose the port
 EXPOSE 8082
 
-# Run the application
-CMD ["java", "-jar", "target/*.jar"]
+# Run the JAR file
+CMD ["java", "-jar", "target/your-app-name.jar"]
